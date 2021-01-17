@@ -14,9 +14,16 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
+    <manifold.version>2020.1.42</manifold.version>
   </properties>
 
   <dependencies>
+
+    <dependency>
+      <groupId>systems.manifold</groupId>
+      <artifactId>manifold-ext-rt</artifactId>
+      <version>${manifold.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -30,7 +37,7 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-css</artifactId>
@@ -42,11 +49,11 @@
       <artifactId>picocli</artifactId>
       <version>4.6.1</version>
     </dependency>
-    
+
+
   </dependencies>
 
   <build>
-    <pluginManagement>
       <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
@@ -62,7 +69,44 @@
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.0</version>
+          <configuration>
+            <source>11</source>
+            <target>11</target>
+            <encoding>UTF-8</encoding>
+            <compilerArgs>
+              <!-- Configure manifold plugin-->
+              <arg>-Xplugin:Manifold</arg>
+            </compilerArgs>
+            <!-- Add the processor path for the plugin -->
+            <annotationProcessorPaths>
+              <path>
+                <groupId>systems.manifold</groupId>
+                <artifactId>manifold-ext</artifactId>
+                <version>${manifold.version}</version>
+              </path>
+            </annotationProcessorPaths>
+          </configuration>
         </plugin>
+        <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>cssThemeMerge.App</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.1</version>
@@ -89,6 +133,5 @@
           <version>3.0.0</version>
         </plugin>
       </plugins>
-    </pluginManagement>
   </build>
 </project>
