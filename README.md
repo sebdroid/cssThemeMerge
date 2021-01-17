@@ -8,7 +8,7 @@ Remove duplicate elements and rules from css files to allow efficient theme swit
   /* Alternative CSS theme */
 }
 ```
-Example:
+Usage:
 ```bash
 java -jar cssThemeMerge.jar -d light.css -a dark.css -o output.css
 ```
