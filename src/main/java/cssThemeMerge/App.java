@@ -11,6 +11,7 @@ import com.helger.css.ECSSVersion;
 import com.helger.css.decl.CSSFontFaceRule;
 import com.helger.css.decl.CSSImportRule;
 import com.helger.css.decl.CSSKeyframesRule;
+import com.helger.css.decl.CSSMediaQuery;
 import com.helger.css.decl.CSSMediaRule;
 import com.helger.css.decl.CSSNamespaceRule;
 import com.helger.css.decl.CSSPageRule;
@@ -46,8 +47,11 @@ public class App implements Callable<Integer> {
     @Option(names = { "-o", "--output" }, description = "The output file", defaultValue = "out.css", required = true)
     private String outputThemeFile;
 
-    @Option(names = { "-t", "--theme" }, description = "Default colour scheme", defaultValue = "light", required = true)
+    @Option(names = { "-t", "--theme" }, description = "Alternative colour scheme", defaultValue = "dark", required = true)
     private String colorScheme;
+
+    @Option(names = { "-m", "--merge" }, description = "Merge color schemes", defaultValue = "true", required = true)
+    private Boolean merge;
 
     @Override
     @SuppressWarnings("undefined")
@@ -156,6 +160,16 @@ public class App implements Callable<Integer> {
         baseUnknownRules.removeAll(defaultCSS.getAllUnknownRules());
         for (CSSUnknownRule rule : baseUnknownRules){
             outputCSS.addRule(rule);
+        }
+
+        if (merge){
+            log.info("Merging CSS");
+
+            CSSMediaRule alternateMode = new CSSMediaRule();
+            alternateMode.jailbreak().m_aRules = outputCSS.getAllRules();
+            alternateMode.addMediaQuery(new CSSMediaQuery(String.format("screen and (prefers-color-scheme: %s)", colorScheme)));
+            defaultCSS.addRule(alternateMode);
+            outputCSS = defaultCSS;
         }
 
         log.info("Attempting to save resultant CSS");
