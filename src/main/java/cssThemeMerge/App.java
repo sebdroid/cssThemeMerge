@@ -4,29 +4,47 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+
 import com.helger.css.ECSSVersion;
 import com.helger.css.decl.CascadingStyleSheet;
 import com.helger.css.reader.CSSReader;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.css.writer.CSSWriter;
 import com.helger.css.writer.CSSWriterSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.css.decl.CSSImportRule;
 import com.helger.css.decl.CSSNamespaceRule;
 import com.helger.css.decl.ICSSTopLevelRule;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @SuppressWarnings("unchecked")
-public class App {
-    public static void main(String[] args) throws Exception {
+@Command(name = "cssThemeMerge", mixinStandardHelpOptions = true, version = "cssThemeMerge 1.0", description = "Removes redundant css to allow theme merging")
+public class App implements Callable<Integer> {
 
-        Logger log = LoggerFactory.getLogger(App.class);
+    Logger log = LoggerFactory.getLogger(App.class);
 
+    @Option(names = { "-d", "--default" }, description = "The default theme")
+    private String defaultThemeFile = "default.css";
+
+    @Option(names = { "-a", "--alternative" }, description = "The alternative theme")
+    private String alternativeThemeFile = "alternative.css";
+
+    @Option(names = { "-o", "--output" }, description = "The output file")
+    private String outputThemeFile = "out.css";
+
+    @Override
+    public Integer call() throws Exception {
         log.info("Attempting CSS parse");
-        File defaultTheme = new File("style-dark.css");
-        File alternativeTheme = new File("style-light.css");
-        File outputFile = new File("style-ee.css");
+        File defaultTheme = new File(defaultThemeFile);
+        File alternativeTheme = new File(alternativeThemeFile);
+        File outputFile = new File(outputThemeFile);
 
         CascadingStyleSheet defaultCSS = null;
         CascadingStyleSheet alternativeCSS = null;
@@ -35,18 +53,18 @@ public class App {
             defaultCSS = CSSReader.readFromFile(defaultTheme, StandardCharsets.UTF_8, ECSSVersion.CSS30);
         } else {
             log.error("File not found");
-            return;
+            return 2;
         }
         if (alternativeTheme.exists()) {
             alternativeCSS = CSSReader.readFromFile(alternativeTheme, StandardCharsets.UTF_8, ECSSVersion.CSS30);
         } else {
             log.error("File not found");
-            return;
+            return 2;
         }
 
         if (defaultCSS == null || alternativeCSS == null) {
             log.error("Unable to parse CSS");
-            return;
+            return 1;
         }
 
         CascadingStyleSheet outputCSS = new CascadingStyleSheet();
@@ -94,5 +112,11 @@ public class App {
         }
 
         log.info("Finished");
+        return 0;
+    }
+
+    public static void main(String... args) {
+        int exitCode = new CommandLine(new App()).execute(args);
+        System.exit(exitCode);
     }
 }

@@ -36,6 +36,13 @@
       <artifactId>ph-css</artifactId>
       <version>6.2.3</version>
     </dependency>
+
+    <dependency>
+      <groupId>info.picocli</groupId>
+      <artifactId>picocli</artifactId>
+      <version>4.6.1</version>
+    </dependency>
+    
   </dependencies>
 
   <build>
