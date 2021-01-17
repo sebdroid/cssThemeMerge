@@ -10,5 +10,5 @@ Remove duplicate elements and rules from css files to allow efficient theme swit
 ```
 Usage:
 ```bash
-java -jar cssThemeMerge.jar -d light.css -a dark.css -o output.css
+java -jar cssThemeMerge.jar -d=light.css -a=dark.css -o=output.css
 ```

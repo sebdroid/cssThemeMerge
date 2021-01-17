@@ -12,6 +12,6 @@ public class AppTest {
     public void testCSS() {
         App app = new App();
         CommandLine cmd = new CommandLine(app);
-        assertEquals(0, cmd.execute("-t=light"));
+        assertEquals(0, cmd.execute("-d=src/test/resources/default.css","-a=src/test/resources/alternative.css","-t=light"));
     }
 }

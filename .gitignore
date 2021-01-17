@@ -135,8 +135,6 @@ buildNumber.properties
 ### vscode ###
 .vscode
 *.code-workspace
-
-default.css
-alternative.css
-out.css
+!test/resources/
+*.css
 staging/
