@@ -135,6 +135,6 @@ buildNumber.properties
 ### vscode ###
 .vscode
 *.code-workspace
-!test/resources/
 *.css
+!/src/test/resources/*.css
 staging/
